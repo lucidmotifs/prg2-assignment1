@@ -17,8 +17,11 @@ public abstract class AbstractMember implements Member {
 		this.id = id;
 		this.fullName = name;
 		
-		// for cases where super() get called
+		// for cases where super() gets called
 		this.initialCredit = 0;
+		
+		// create borrowing history instance
+		this.history = new BorrowingHistory();
 	}
 	
 	@Override
@@ -45,6 +48,14 @@ public abstract class AbstractMember implements Member {
 	
 	@Override
 	public void returnHolding(Holding h) {
+		// create a HistoryRecord before returning
+		HistoryRecord record_ = new HistoryRecord();
+		record_.setHolding(h);
+		
+		// add to BorrowingHistory 
+		this.history.addRecord(record_);
+		
+		// remove the holding 
 		this.holdings.remove(h);
 	}
 	

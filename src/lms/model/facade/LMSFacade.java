@@ -3,6 +3,7 @@ package lms.model.facade;
 import java.util.Collection;
 
 import lms.model.Book;
+import lms.model.BorrowingHistory;
 import lms.model.HistoryRecord;
 import lms.model.Holding;
 import lms.model.LibraryCollection;
@@ -88,18 +89,40 @@ public class LMSFacade implements LMSModel {
 		// return a holding and check for late fees
 		this.getMember().returnHolding(this.getHolding(holdingId));
 	}
+	
 
 	@Override
 	public HistoryRecord[] getBorrowingHistory() {
-		// TODO Auto-generated method stub
-		return null;
+		// get the members borrowing history object
+		BorrowingHistory history_ = this.getMember().getBorrowingHistory();
+		
+		// turn the records from the history and turn into an Array
+		Collection< HistoryRecord > c = history_.getRecords();
+		
+		if (null == c) {
+			return null;
+		} else {
+			return c.toArray(new HistoryRecord[c.size()]);
+		}
 	}
+	
 
 	@Override
 	public HistoryRecord getHistoryRecord(int holdingId) {
-		// TODO Auto-generated method stub
+		// get the members borrowing history Array
+		HistoryRecord[] records_ = getBorrowingHistory();
+		
+		for (HistoryRecord r: records_) {
+			// if we get a match, return immediately
+			if (r.getHolding().getCode() == holdingId) {
+				return r;
+			}
+		}
+		
+		// no results
 		return null;
 	}
+	
 
 	@Override
 	public Holding[] getBorrowedHoldings() {
@@ -123,29 +146,39 @@ public class LMSFacade implements LMSModel {
 		return this.getMember().getRemainingCredit();
 	}
 
+	
 	@Override
 	public int calculateTotalLateFees() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	
 	@Override
 	public void setDate(String currentDate) {
 		this.date = currentDate;
 	}
 	
+	
+	@Override
 	public void addCollection(LibraryCollection collection) {
 		this.library.setCollection(collection);
 	}
 	
+	
+	@Override
 	public LibraryCollection getCollection() {
 		return this.library.getCollection();
 	}
 	
+	
+	@Override
 	public void addMember(Member member) {
 		this.library.setMember(member);
 	}
 	
+	
+	@Override
 	public Member getMember() {
 		return this.library.getMember();
 	}
