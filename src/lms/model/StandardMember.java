@@ -8,8 +8,8 @@ public class StandardMember extends AbstractMember {
 	}
 	
 	@Override
-	public void borrow(Holding h) {
-		super.borrow(h);
+	public void borrowHolding(Holding h) {
+		super.borrowHolding(h);
 	}
 	
 	public String toString() {

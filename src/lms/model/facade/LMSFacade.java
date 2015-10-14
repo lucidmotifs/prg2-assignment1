@@ -104,7 +104,13 @@ public class LMSFacade implements LMSModel {
 	@Override
 	public Holding[] getBorrowedHoldings() {
 		Collection< Holding > c = this.getMember().getCurrentHoldings();
-		return c.toArray(new Holding[c.size()]);
+		
+		// TODO: refactor this to be clearer/neater
+		if (null == c) {
+			return null;
+		} else {
+			return c.toArray(new Holding[c.size()]);
+		}
 	}
 
 	@Override

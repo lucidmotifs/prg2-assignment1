@@ -23,7 +23,9 @@ public abstract class AbstractMember implements Member {
 	
 	@Override
 	public Collection<Holding> getCurrentHoldings() {
-		
+		if (this.holdings.isEmpty()) {
+			return null;
+		}
 		return this.holdings;
 	}
 	
@@ -39,6 +41,11 @@ public abstract class AbstractMember implements Member {
 		
 		// add this holding to the holdings collection
 		this.holdings.add(h);
+	}
+	
+	@Override
+	public void returnHolding(Holding h) {
+		this.holdings.remove(h);
 	}
 	
 	@Override
