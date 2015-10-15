@@ -26,15 +26,15 @@ public abstract class Holding implements Comparable<Holding> {
 		return String.format("%s:%s:%d:%d:%s", this.code, this.title, this.loanFee, this.loanPeriod, className);
 	}
 	
-	/* Method for doing comparisons between Holding objects. This will compare the codes.
+	/* Method for doing comparisons between Holding objects.
 	 * (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
 	public int compareTo(Holding compareHolding) {		
-		int compareQuantity = ((Holding) compareHolding).getCode(); 
+		int compareCode = ((Holding) compareHolding).getCode(); 
 		
 		//ascending order
-		return this.code - compareQuantity;		
+		return this.code - compareCode;		
 	}
 }
