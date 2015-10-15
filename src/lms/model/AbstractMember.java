@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import lms.model.exception.InsufficientCreditException;
 import lms.model.exception.MultipleBorrowingException;
+import lms.model.exception.OverdrawnCreditException;
 
 public abstract class AbstractMember implements Member {
 	// protected:
@@ -26,6 +28,7 @@ public abstract class AbstractMember implements Member {
 		this.history = new BorrowingHistory();
 	}
 	
+	
 	/* */
 	@Override
 	public Collection<Holding> getCurrentHoldings() {
@@ -35,30 +38,36 @@ public abstract class AbstractMember implements Member {
 		return this.holdings;
 	}
 	
+	
 	/* */
 	@Override
 	public BorrowingHistory getBorrowingHistory() {
 		return this.history;
 	}
 	
+	
 	/* Loans out a holding. Checks that the holding has not been borrowed before 
 	 * and charges user a fee. */
 	@Override
-	public void borrowHolding(Holding h) throws MultipleBorrowingException {
+	public void borrowHolding(Holding h) throws MultipleBorrowingException, InsufficientCreditException {
 		// check loan history for holding
 		// throw exception if one exists, as a user can only borrow a holding once.
-		if (this.history.getRecords().contains(h)) {
+		if (this.history.hasRecordWithHolding(h)) {
 			throw new MultipleBorrowingException();
 		}
 		
 		// otherwise subtract the holding loan fee from current credit
+		// this call may throw up an InsufficientCreditException
 		this.setCredit( -h.loanFee );
+		
+		//
 		
 		// and add this holding to the holdings collection
 		this.holdings.add(h);
 	}
 	
 	
+	/* */
 	@Override
 	public void returnHolding(Holding h) {
 		// create a HistoryRecord before returning
@@ -73,23 +82,40 @@ public abstract class AbstractMember implements Member {
 	}
 	
 	
+	/* Calculates a return for late fees, and then returns the holding */
+	public void returnHolding(Holding holding, String date) throws OverdrawnCreditException {
+		
+	}
+	
+	
+	/* Adjusts the credit of a member by the given amount. 
+	 * TODO: consider removing the need to supply a negative number */
 	@Override
-	public void setCredit(int amount) {
+	public void setCredit(int amount) throws InsufficientCreditException {
+		// check the member has enough credit to make the loan
+		if (this.currentCredit + amount < 0) {
+			throw new InsufficientCreditException();
+		}
+		
 		this.currentCredit += amount;
 	}
 	
+	/* */	
 	@Override
 	public void resetCredit() {
 		this.currentCredit = this.initialCredit;
 	}
 	
+	/* */	
 	@Override
 	public int getRemainingCredit() {
 		return this.currentCredit;
 	}
 	
+	
+	/* */
 	public String toString() {
-		// potential alternative to adding the 'type' string in children
+		// potential alternative to adding the 'type' property in children - tightly coupled, not great really.
 		String className = this.getClass().getSimpleName();
 		className = className.replace("Member", "");
 		className = className.toUpperCase();

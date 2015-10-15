@@ -18,6 +18,10 @@ public abstract class Holding implements Comparable<Holding> {
 		return this.code;
 	}
 	
+	public int getLoanFee() {
+		return this.loanFee;
+	}
+	
 	public String toString() {
 		// potential alternative to adding the 'type' property
 		String className = this.getClass().getSimpleName();

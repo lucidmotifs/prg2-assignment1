@@ -107,10 +107,11 @@ public class LMSFacade implements LMSModel {
 	@Override
 	public void returnHolding(int holdingId) throws OverdrawnCreditException {
 		// return a holding and check for late fees
-		this.getMember().returnHolding(this.getHolding(holdingId));
+		this.getMember().returnHolding(this.getHolding(holdingId), this.date);
 	}
 	
-
+	
+	/* Convenience class for getting a member's borrowing history */
 	@Override
 	public HistoryRecord[] getBorrowingHistory() {
 		// get the members borrowing history object
@@ -126,7 +127,8 @@ public class LMSFacade implements LMSModel {
 		}
 	}
 	
-
+	
+	/* Gets a specific history record from the member using a holding ID */
 	@Override
 	public HistoryRecord getHistoryRecord(int holdingId) {
 		// get the members borrowing history Array
@@ -143,7 +145,8 @@ public class LMSFacade implements LMSModel {
 		return null;
 	}
 	
-
+	
+	/* Returns the currently borrowed holding of the member */
 	@Override
 	public Holding[] getBorrowedHoldings() {
 		Collection< Holding > c = this.getMember().getCurrentHoldings();
@@ -156,11 +159,15 @@ public class LMSFacade implements LMSModel {
 		}
 	}
 
+	
+	/* Resets the member's credit to the initial value */
 	@Override
 	public void resetMemberCredit() {
 		this.getMember().resetCredit();
 	}
+	
 
+	/* Gets the remaining credit for the library member */
 	@Override
 	public int calculateRemainingCredit() {
 		return this.getMember().getRemainingCredit();
@@ -173,7 +180,7 @@ public class LMSFacade implements LMSModel {
 		return 0;
 	}
 
-	
+	/* Sets the current date for calculating late fees - etc. */
 	@Override
 	public void setDate(String currentDate) {
 		this.date = currentDate;
