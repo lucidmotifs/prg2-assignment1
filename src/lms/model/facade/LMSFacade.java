@@ -30,10 +30,20 @@ public class LMSFacade implements LMSModel {
 
 	@Override
 	public boolean removeHolding(int holdingId) {
-		// before removing a holding, we must ensure no member has it
-		// out on loan.
+		/* Before removing a holding, we must ensure no member has it
+		out on loan. */
+		
+		// get the library member
 		Member member_ = this.library.getMember();
-		if (member_.getCurrentHoldings())
+		
+		// get the instance of the holding from the ID
+		Holding holding_ = this.getHolding(holdingId);
+		
+		// check if the holding is currently on load by the member.
+		if (member_.getCurrentHoldings().contains(holding_)) {
+			// if so, return false immediately. TODO: throw exception? Doesn't work with TestHarness...
+			return false;
+		}
 		
 		// retrieve library collection pointer
 		LibraryCollection lc = this.library.getCollection();
@@ -41,6 +51,7 @@ public class LMSFacade implements LMSModel {
 		// remove a holding, return result
 		return lc.removeHolding(holdingId);		
 	}
+	
 
 	@Override
 	public Holding getHolding(int holdingId) {
@@ -49,12 +60,15 @@ public class LMSFacade implements LMSModel {
 		
 		return lc.getHolding(holdingId);
 	}
+	
 
 	@Override
 	public Holding[] getAllHoldings() {
 		return this.library.getCollection().getAllHoldings();
 	}
-
+	
+	
+	/* returns number of books in current holding */
 	@Override
 	public int countBooks() {
 		Holding[] holdings_ = this.getAllHoldings();
@@ -69,6 +83,7 @@ public class LMSFacade implements LMSModel {
 		return numBooks;
 	}
 
+	/* returns number of videos in current holding */
 	@Override
 	public int countVideos() {
 		Holding[] holdings_ = this.getAllHoldings();

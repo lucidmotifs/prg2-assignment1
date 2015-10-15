@@ -7,11 +7,6 @@ public class StandardMember extends AbstractMember {
 		this.initialCredit = this.currentCredit = 30;
 	}
 	
-	@Override
-	public void borrowHolding(Holding h) {
-		super.borrowHolding(h);
-	}
-	
 	public String toString() {
 		return String.format("%s:%s", super.toString(), "STANDARD");
 	}

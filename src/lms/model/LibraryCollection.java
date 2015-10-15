@@ -40,7 +40,7 @@ public class LibraryCollection {
 	}
 	
 	
-	/* Remove a holding form the map, if it exists */
+	/* Remove a holding from the map, if it exists */
 	public boolean removeHolding(int code) {
 		if (!this.holdings.containsKey(code)) {
 			return false;

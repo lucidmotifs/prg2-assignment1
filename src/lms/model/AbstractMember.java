@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import lms.model.exception.MultipleBorrowingException;
+
 public abstract class AbstractMember implements Member {
 	// protected:
 	protected String id;
@@ -24,6 +26,7 @@ public abstract class AbstractMember implements Member {
 		this.history = new BorrowingHistory();
 	}
 	
+	/* */
 	@Override
 	public Collection<Holding> getCurrentHoldings() {
 		if (this.holdings.isEmpty()) {
@@ -32,19 +35,29 @@ public abstract class AbstractMember implements Member {
 		return this.holdings;
 	}
 	
+	/* */
 	@Override
 	public BorrowingHistory getBorrowingHistory() {
 		return this.history;
 	}
 	
+	/* Loans out a holding. Checks that the holding has not been borrowed before 
+	 * and charges user a fee. */
 	@Override
-	public void borrowHolding(Holding h) {
-		// subtract the holding loan fee from current credit
-		this.setCredit(-h.loanFee);
+	public void borrowHolding(Holding h) throws MultipleBorrowingException {
+		// check loan history for holding
+		// throw exception if one exists, as a user can only borrow a holding once.
+		if (this.history.getRecords().contains(h)) {
+			throw new MultipleBorrowingException();
+		}
 		
-		// add this holding to the holdings collection
+		// otherwise subtract the holding loan fee from current credit
+		this.setCredit( -h.loanFee );
+		
+		// and add this holding to the holdings collection
 		this.holdings.add(h);
 	}
+	
 	
 	@Override
 	public void returnHolding(Holding h) {
@@ -55,9 +68,10 @@ public abstract class AbstractMember implements Member {
 		// add to BorrowingHistory 
 		this.history.addRecord(record_);
 		
-		// remove the holding 
+		// remove the holding from this member
 		this.holdings.remove(h);
 	}
+	
 	
 	@Override
 	public void setCredit(int amount) {
