@@ -26,6 +26,7 @@ public class LibraryCollection {
 		}
 	}
 	
+	
 	/* Add a new holding to the Map, so long as the code doesn't already exist */
 	public boolean addHolding(Holding h) {
 		if (this.holdings.containsKey(h.code)) {
@@ -47,7 +48,7 @@ public class LibraryCollection {
 			// remove the holding
 			this.holdings.remove(code);
 			
-			return this.holdings.containsKey(code);
+			return !this.holdings.containsKey(code);
 		}
 	}
 	

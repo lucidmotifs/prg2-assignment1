@@ -30,6 +30,11 @@ public class LMSFacade implements LMSModel {
 
 	@Override
 	public boolean removeHolding(int holdingId) {
+		// before removing a holding, we must ensure no member has it
+		// out on loan.
+		Member member_ = this.library.getMember();
+		if (member_.getCurrentHoldings())
+		
 		// retrieve library collection pointer
 		LibraryCollection lc = this.library.getCollection();
 		
