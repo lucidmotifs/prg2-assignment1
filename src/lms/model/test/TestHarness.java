@@ -688,6 +688,7 @@ public class TestHarness {
 
 			System.out.println("Returning late book ...");
 			model.returnHolding(1000001);
+			System.out.println(model.calculateRemainingCredit());
 			System.out
 					.print("Checking member's credit with calculateRemainingCredit() ...");
 			if (failureCheck(

@@ -46,6 +46,23 @@ public class BorrowingHistory {
 	
 	/* Return all the records for this History */
 	public List<HistoryRecord> getRecords() {
+		if (items.isEmpty()) {
+			return null;
+		}
+		
 		return this.items;
+	}
+	
+	/* Calculate the total late fees for all HistoryRecords */
+	public int calculateTotalLateFees() {
+		// create variable to hold total
+		int totalFees = 0;
+		
+		// iterate through records and add the fees
+		for (HistoryRecord r: items) {
+			totalFees += r.getLateFee();
+		}
+		
+		return totalFees;
 	}
 }

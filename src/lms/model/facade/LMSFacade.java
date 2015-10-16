@@ -28,7 +28,11 @@ public class LMSFacade implements LMSModel {
 		// add a new holding, return result
 		return lc.addHolding(holding);
 	}
-
+	
+	
+	/* This method removes a holding from the library collection if no
+	 * member has it out on loan (or there isn't a member yet)
+	 */
 	@Override
 	public boolean removeHolding(int holdingId) {
 		/* Before removing a holding, we must ensure no member has it
@@ -37,13 +41,15 @@ public class LMSFacade implements LMSModel {
 		// get the library member
 		Member member_ = this.library.getMember();
 		
-		// get the instance of the holding from the ID
-		Holding holding_ = this.getHolding(holdingId);
-		
-		// check if the holding is currently on load by the member.
-		if (member_.getCurrentHoldings().contains(holding_)) {
-			// if so, return false immediately. TODO: throw exception? Doesn't work with TestHarness...
-			return false;
+		if (null != member_) {		
+			// get the instance of the holding from the ID
+			Holding holding_ = this.getHolding(holdingId);
+			
+			// check if the holding is currently on load by the member.
+			if (member_.getCurrentHoldings().contains(holding_)) {
+				// if so, return false immediately.
+				return false;
+			}
 		}
 		
 		// retrieve library collection pointer
@@ -112,7 +118,7 @@ public class LMSFacade implements LMSModel {
 	@Override
 	public void returnHolding(int holdingId) throws OverdrawnCreditException {
 		// return a holding and check for late fees
-		this.getMember().returnHolding(this.getHolding(holdingId), DateUtil.getInstance().getDate());
+		this.getMember().returnHolding(this.getHolding(holdingId));
 	}
 	
 	
@@ -181,8 +187,7 @@ public class LMSFacade implements LMSModel {
 	
 	@Override
 	public int calculateTotalLateFees() {
-		// TODO Auto-generated method stub
-		return 0;
+		return getMember().getBorrowingHistory().calculateTotalLateFees();
 	}
 	
 

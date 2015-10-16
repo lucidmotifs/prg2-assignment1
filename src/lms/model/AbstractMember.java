@@ -57,6 +57,10 @@ public abstract class AbstractMember implements Member {
 			throw new MultipleBorrowingException();
 		}
 		
+		// subtract the holding loan fee from current credit
+		// this call may throw up an InsufficientCreditException
+		adjustCredit( -h.loanFee );
+		
 		// create a new history record for this holding and add it to the
 		// members history
 		HistoryRecord record_ = new HistoryRecord(h);
@@ -64,9 +68,11 @@ public abstract class AbstractMember implements Member {
 		record_.setBorrowDate(DateUtil.getInstance().getDate());
 		this.history.addRecord(record_);
 		
-		// subtract the holding loan fee from current credit
-		// this call may throw up an InsufficientCreditException
-		this.setCredit( -h.loanFee );
+		// we cannot add a HistoryRecord before a holding is returned,
+		// so we must add a new property to holding 'lastBorrowed'
+		// and assign it the borrowed date.
+		// when a HistoryRecord is created and the holding added, the history record will
+		// call setBorrowDate(record.getLastBorrowed())
 		
 		// and add this holding to the collection
 		this.holdings.add(h);
@@ -75,32 +81,57 @@ public abstract class AbstractMember implements Member {
 	
 	/* */
 	@Override
-	public void returnHolding(Holding h) {
+	public void returnHolding(Holding h) throws OverdrawnCreditException {
 		// update the HistoryRecord before returning
 		HistoryRecord record_ = this.history.getRecord(h);
 		record_.setReturnDate(DateUtil.getInstance().getDate());
+		
+		try {
+			// adjust the members credit
+			adjustCredit( -record_.getLateFee() );
+		} catch (InsufficientCreditException e) {
+			// cannot return if there's no credit to pay the late fee
+			throw new OverdrawnCreditException();
+		}
 		
 		// remove the holding from this member
 		this.holdings.remove(h);
 	}
 	
 	
-	/* Calculates a return for late fees, and then returns the holding */
-	public void returnHolding(Holding holding, String date) throws OverdrawnCreditException {
-		
-	}
-	
-	
 	/* Adjusts the credit of a member by the given amount. 
 	 * TODO: consider removing the need to supply a negative number */
 	@Override
-	public void setCredit(int amount) throws InsufficientCreditException {
+	public void adjustCredit(int amount) throws InsufficientCreditException {
 		// check the member has enough credit to make the loan
 		if (this.currentCredit + amount < 0) {
 			throw new InsufficientCreditException();
 		}
 		
-		this.currentCredit += amount;
+		setCredit(currentCredit + amount);
+	}
+	
+	
+	/* Adjusts the credit of a member by a given amount. Can force the transaction
+	 * as is necessary is situations like a premium member
+	 */
+	@Override
+	public void adjustCredit(int amount, boolean force) {
+		if (force) {
+			setCredit(currentCredit + amount);
+		} else {
+			try {
+				adjustCredit(amount);
+			} catch (InsufficientCreditException e) {
+				//ignore
+			}
+		}
+	}
+	
+	
+	/* */
+	protected void setCredit(int amount) {
+		this.currentCredit = amount;
 	}
 	
 	/* */	
