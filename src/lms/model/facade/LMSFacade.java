@@ -13,10 +13,11 @@ import lms.model.Library;
 import lms.model.exception.InsufficientCreditException;
 import lms.model.exception.MultipleBorrowingException;
 import lms.model.exception.OverdrawnCreditException;
+import lms.model.util.DateUtil;
 
 public class LMSFacade implements LMSModel {
 	// private:
-	private String date;	
+	// TODO: replace with static singleton class
 	private Library library = new Library(); 
 
 	@Override
@@ -104,10 +105,14 @@ public class LMSFacade implements LMSModel {
 		this.getMember().borrowHolding(this.getHolding(holdingId));		
 	}
 
+	
+	/* This method will return a holding and automatically charge a member any late fees
+	 * accrued
+	 */
 	@Override
 	public void returnHolding(int holdingId) throws OverdrawnCreditException {
 		// return a holding and check for late fees
-		this.getMember().returnHolding(this.getHolding(holdingId), this.date);
+		this.getMember().returnHolding(this.getHolding(holdingId), DateUtil.getInstance().getDate());
 	}
 	
 	
@@ -179,11 +184,12 @@ public class LMSFacade implements LMSModel {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
 
 	/* Sets the current date for calculating late fees - etc. */
 	@Override
 	public void setDate(String currentDate) {
-		this.date = currentDate;
+		DateUtil.getInstance().setDate(currentDate);
 	}
 	
 	

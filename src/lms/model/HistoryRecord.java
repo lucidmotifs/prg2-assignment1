@@ -1,12 +1,21 @@
 package lms.model;
 
+import lms.model.util.DateUtil;
+
 public class HistoryRecord {
 	// private:
+	private String borrowDate;
+	private String returnDate;
 	private Holding holding;
 	private int lateFee;
 	
 	public HistoryRecord() {
 		this.lateFee = 0;
+	}
+	
+	public HistoryRecord(Holding h) {
+		this();
+		this.setHolding(h);		
 	}
 	
 	public void setHolding(Holding h) {
@@ -15,6 +24,29 @@ public class HistoryRecord {
 	
 	public Holding getHolding() {
 		return this.holding;
+	}
+	
+	public void setBorrowDate(String date) {
+		this.borrowDate = date;
+	}
+	
+	
+	/* Sets the return date of the holding, set the late fee if the holding
+	 * complains about one, returns that fee.
+	 */
+	public int setReturnDate(String date) {
+		this.returnDate = date;
+		
+		// This is likely done in facade - but is more correct here anyway.
+		DateUtil.getInstance().setDate(date);
+		
+		// get the total loan time
+		int loanTime = DateUtil.getInstance().getElapsedDays(borrowDate);
+		
+		// calculate late fees, if any.
+		this.setLateFee(this.holding.calculateLateFee(loanTime));
+		
+		return this.getLateFee();
 	}
 	
 	public void setLateFee(int amount) {

@@ -7,6 +7,7 @@ import java.util.List;
 import lms.model.exception.InsufficientCreditException;
 import lms.model.exception.MultipleBorrowingException;
 import lms.model.exception.OverdrawnCreditException;
+import lms.model.util.DateUtil;
 
 public abstract class AbstractMember implements Member {
 	// protected:
@@ -56,13 +57,18 @@ public abstract class AbstractMember implements Member {
 			throw new MultipleBorrowingException();
 		}
 		
-		// otherwise subtract the holding loan fee from current credit
+		// create a new history record for this holding and add it to the
+		// members history
+		HistoryRecord record_ = new HistoryRecord(h);
+		// add the current date
+		record_.setBorrowDate(DateUtil.getInstance().getDate());
+		this.history.addRecord(record_);
+		
+		// subtract the holding loan fee from current credit
 		// this call may throw up an InsufficientCreditException
 		this.setCredit( -h.loanFee );
 		
-		//
-		
-		// and add this holding to the holdings collection
+		// and add this holding to the collection
 		this.holdings.add(h);
 	}
 	
@@ -70,12 +76,9 @@ public abstract class AbstractMember implements Member {
 	/* */
 	@Override
 	public void returnHolding(Holding h) {
-		// create a HistoryRecord before returning
-		HistoryRecord record_ = new HistoryRecord();
-		record_.setHolding(h);
-		
-		// add to BorrowingHistory 
-		this.history.addRecord(record_);
+		// update the HistoryRecord before returning
+		HistoryRecord record_ = this.history.getRecord(h);
+		record_.setReturnDate(DateUtil.getInstance().getDate());
 		
 		// remove the holding from this member
 		this.holdings.remove(h);

@@ -19,7 +19,22 @@ public class BorrowingHistory {
 			}
 		}
 		
+		//no result
 		return false;
+	}
+	
+	
+	/* Method that returns a specific history record, by holding */
+	public HistoryRecord getRecord(Holding h) {
+		for (HistoryRecord r: items) {
+			if (r.getHolding().equals(h)) {
+				// return result
+				return r;
+			}
+		}
+		
+		// no result
+		return null;
 	}
 	
 	
