@@ -4,10 +4,10 @@ public abstract class Holding implements Comparable<Holding> {
 	// protected:
 	protected String title;
 	
-	protected int loanFee;
-	protected int pentaltyFee;	
-	protected int loanPeriod;
 	protected int code;
+	protected int loanFee;		
+	protected int loanPeriod;
+	protected int penaltyFee;
 	
 	public Holding(int code, String title) {
 		this.code = code;
@@ -20,6 +20,17 @@ public abstract class Holding implements Comparable<Holding> {
 	
 	public int getLoanFee() {
 		return this.loanFee;
+	}
+	
+	public int calculateLateFee(int loanTime) {
+		int lateFee_ = 0;
+		
+		// if item has been out longer than the set loan period
+		if (loanTime > loanPeriod) {
+			lateFee_ = (loanTime - loanPeriod) * penaltyFee;
+		}
+		
+		return lateFee_;
 	}
 	
 	public String toString() {

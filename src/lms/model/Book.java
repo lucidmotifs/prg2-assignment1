@@ -6,5 +6,6 @@ public class Book extends Holding {
 		
 		this.loanFee = 10;
 		this.loanPeriod = 28;
+		this.penaltyFee = 2;
 	}
 }
