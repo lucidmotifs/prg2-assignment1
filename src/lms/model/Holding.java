@@ -3,6 +3,7 @@ package lms.model;
 public abstract class Holding implements Comparable<Holding> {
 	// protected:
 	protected String title;
+	protected String lastBorrowed;
 	
 	protected int code;
 	protected int loanFee;		
@@ -12,6 +13,7 @@ public abstract class Holding implements Comparable<Holding> {
 	public Holding(int code, String title) {
 		this.code = code;
 		this.title = title;
+		this.lastBorrowed = "";
 	}
 	
 	public int getCode() {
@@ -20,6 +22,14 @@ public abstract class Holding implements Comparable<Holding> {
 	
 	public int getLoanFee() {
 		return this.loanFee;
+	}
+	
+	public String getLastBorrowed() {
+		return this.lastBorrowed;
+	}
+	
+	public void setLastBorrowed(String date) {
+		this.lastBorrowed = date;
 	}
 	
 	public int calculateLateFee(int loanTime) {

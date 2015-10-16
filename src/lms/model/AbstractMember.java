@@ -61,18 +61,12 @@ public abstract class AbstractMember implements Member {
 		// this call may throw up an InsufficientCreditException
 		adjustCredit( -h.loanFee );
 		
-		// create a new history record for this holding and add it to the
-		// members history
-		HistoryRecord record_ = new HistoryRecord(h);
-		// add the current date
-		record_.setBorrowDate(DateUtil.getInstance().getDate());
-		this.history.addRecord(record_);
-		
 		// we cannot add a HistoryRecord before a holding is returned,
 		// so we must add a new property to holding 'lastBorrowed'
 		// and assign it the borrowed date.
 		// when a HistoryRecord is created and the holding added, the history record will
 		// call setBorrowDate(record.getLastBorrowed())
+		h.setLastBorrowed(DateUtil.getInstance().getDate());
 		
 		// and add this holding to the collection
 		this.holdings.add(h);
