@@ -1,12 +1,18 @@
 package lms.model;
 
 public class Library {
-	// private:
-	private LibraryCollection collection;
+
+	private static Library library;
+	private LibraryCollection collection = null;
 	private Member member;
 
-	public Library() {
-		
+	// private constructor prevents instantiation from other classes
+	private Library() {}	
+	// makes sure that only one instance of DateUtil can be created
+	public static Library getInstance() {
+		if (library == null)
+			library = new Library();
+		return library;
 	}
 	
 	public void setCollection(LibraryCollection collection) {
@@ -25,3 +31,4 @@ public class Library {
 		return this.member;
 	}
 }
+	

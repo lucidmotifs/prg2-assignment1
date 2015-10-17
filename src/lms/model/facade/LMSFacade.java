@@ -16,14 +16,11 @@ import lms.model.exception.OverdrawnCreditException;
 import lms.model.util.DateUtil;
 
 public class LMSFacade implements LMSModel {
-	// private:
-	// TODO: replace with static singleton class
-	private Library library = new Library(); 
 
 	@Override
 	public boolean addHolding(Holding holding) {
 		// retrieve library collection pointer
-		LibraryCollection lc = this.library.getCollection();
+		LibraryCollection lc = Library.getInstance().getCollection();
 		
 		// add a new holding, return result
 		return lc.addHolding(holding);
@@ -39,9 +36,9 @@ public class LMSFacade implements LMSModel {
 		out on loan. */
 		
 		// get the library member
-		Member member_ = this.library.getMember();
+		Member member_ = Library.getInstance().getMember();
 		
-		if (null != member_) {		
+		if (null != member_ && null != member_.getCurrentHoldings()) {		
 			// get the instance of the holding from the ID
 			Holding holding_ = this.getHolding(holdingId);
 			
@@ -53,7 +50,7 @@ public class LMSFacade implements LMSModel {
 		}
 		
 		// retrieve library collection pointer
-		LibraryCollection lc = this.library.getCollection();
+		LibraryCollection lc = Library.getInstance().getCollection();
 		
 		// remove a holding, return result
 		return lc.removeHolding(holdingId);		
@@ -63,7 +60,8 @@ public class LMSFacade implements LMSModel {
 	@Override
 	public Holding getHolding(int holdingId) {
 		// retrieve library collection pointer
-		LibraryCollection lc = this.library.getCollection();
+		LibraryCollection lc = Library.getInstance().getCollection();
+		System.out.println(lc.getHolding(holdingId));
 		
 		return lc.getHolding(holdingId);
 	}
@@ -71,7 +69,7 @@ public class LMSFacade implements LMSModel {
 
 	@Override
 	public Holding[] getAllHoldings() {
-		return this.library.getCollection().getAllHoldings();
+		return Library.getInstance().getCollection().getAllHoldings();
 	}
 	
 	
@@ -128,7 +126,7 @@ public class LMSFacade implements LMSModel {
 		// get the members borrowing history object
 		BorrowingHistory history_ = this.getMember().getBorrowingHistory();
 		
-		// turn the records from the history and turn into an Array
+		// get the records from the history and transform into an Array
 		Collection< HistoryRecord > c = history_.getRecords();
 		
 		if (null == c) {
@@ -165,8 +163,7 @@ public class LMSFacade implements LMSModel {
 	@Override
 	public Holding[] getBorrowedHoldings() {
 		Collection< Holding > c = this.getMember().getCurrentHoldings();
-		
-		// TODO: refactor this to be clearer/neater
+
 		if (null == c) {
 			return null;
 		} else {
@@ -191,7 +188,7 @@ public class LMSFacade implements LMSModel {
 	
 	@Override
 	public int calculateTotalLateFees() {
-		return getMember().getBorrowingHistory().calculateTotalLateFees();
+		return this.getMember().getBorrowingHistory().calculateTotalLateFees();
 	}
 	
 
@@ -204,24 +201,24 @@ public class LMSFacade implements LMSModel {
 	
 	@Override
 	public void addCollection(LibraryCollection collection) {
-		this.library.setCollection(collection);
+		Library.getInstance().setCollection(collection);
 	}
 	
 	
 	@Override
 	public LibraryCollection getCollection() {
-		return this.library.getCollection();
+		return Library.getInstance().getCollection();
 	}
 	
 	
 	@Override
 	public void addMember(Member member) {
-		this.library.setMember(member);
+		Library.getInstance().setMember(member);
 	}
 	
 	
 	@Override
 	public Member getMember() {
-		return this.library.getMember();
+		return Library.getInstance().getMember();
 	}
 }

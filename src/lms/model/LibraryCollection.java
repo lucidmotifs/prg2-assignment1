@@ -17,10 +17,10 @@ public class LibraryCollection {
 	}
 	
 	/* Return a holding given a certain ID */
-	public Holding getHolding(int code) {
+	public Holding getHolding(int holdingId) {
 		// check holding with this key exists
-		if (this.holdings.containsKey(code)) {
-			return this.holdings.get(code);
+		if (this.holdings.containsKey(holdingId)) {
+			return this.holdings.get(holdingId);
 		} else {
 			return null;
 		}
