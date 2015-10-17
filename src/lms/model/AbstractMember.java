@@ -76,8 +76,8 @@ public abstract class AbstractMember implements Member {
 	/* */
 	@Override
 	public void returnHolding(Holding h) throws OverdrawnCreditException {
-		// update the HistoryRecord before returning
-		HistoryRecord record_ = this.history.getRecord(h);
+		// must create a new record now that we're returning the book
+		HistoryRecord record_ = new HistoryRecord(h);
 		record_.setReturnDate(DateUtil.getInstance().getDate());
 		
 		try {
@@ -86,6 +86,9 @@ public abstract class AbstractMember implements Member {
 		} catch (InsufficientCreditException e) {
 			// cannot return if there's no credit to pay the late fee
 			throw new OverdrawnCreditException();
+		} finally {
+			// add the record to the member's history
+			history.addRecord(record_);
 		}
 		
 		// remove the holding from this member
@@ -107,7 +110,7 @@ public abstract class AbstractMember implements Member {
 	
 	
 	/* Adjusts the credit of a member by a given amount. Can force the transaction
-	 * as is necessary is situations like a premium member
+	 * as is necessary in situations like a premium member returning a holding
 	 */
 	@Override
 	public void adjustCredit(int amount, boolean force) {

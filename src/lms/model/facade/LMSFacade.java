@@ -145,15 +145,19 @@ public class LMSFacade implements LMSModel {
 		// get the members borrowing history Array
 		HistoryRecord[] records_ = getBorrowingHistory();
 		
-		for (HistoryRecord r: records_) {
-			// if we get a match, return immediately
-			if (r.getHolding().getCode() == holdingId) {
-				return r;
+		if (null == records_) {
+			return null;
+		} else {		
+			for (HistoryRecord r: records_) {
+				// if we get a match, return immediately
+				if (r.getHolding().getCode() == holdingId) {
+					return r;
+				}
 			}
-		}
 		
-		// no results
-		return null;
+			// no results
+			return null;
+		}
 	}
 	
 	
